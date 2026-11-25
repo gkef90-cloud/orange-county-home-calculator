@@ -91,10 +91,20 @@ h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.2em 0}h2{font-size:1.08rem;margin:
   <div class='panel'>
     <h2>The answer after <span id='yearsOut'>10</span> years</h2>
     <div class='summary'>
-      <small>Net benefit of owning versus renting, including tax savings</small>
+      <small>Requested comparison: net home equity + tax savings − cumulative rent</small>
       <div class='big' id='wealthDelta'>—</div>
       <strong id='wealthLabel'>Calculating...</strong>
-      <p class='hint' style='margin-top:8px'>Calculated from equity gained, minus the difference in housing cash costs, plus incremental tax savings, less buying and selling costs. Rent is a sunk cost in this model; no renter investments are assumed.</p>
+      <p class='hint' style='margin-top:8px'>This is the simple equity-versus-rent comparison you requested. It is a presentation measure, not a net investment return: owner cash payments and the initial down payment must also be considered for a full economic comparison.</p>
+    </div>
+    <div class='panel' style='margin-top:12px;background:#102132'>
+      <h2>Equity, tax savings, and rent: the delta</h2>
+      <table><tbody>
+        <tr><td>Net home equity after selling costs</td><td id='simpleEquity'>—</td></tr>
+        <tr><td>+ Cumulative income-tax savings</td><td id='simpleTax'>—</td></tr>
+        <tr><td>− Total rent paid (sunk cost)</td><td id='simpleRent'>—</td></tr>
+        <tr><td><strong>= Equity-and-rent delta</strong></td><td><strong id='simpleDelta'>—</strong></td></tr>
+      </tbody></table>
+      <p class='hint'>Net equity includes the original down payment and mortgage principal repaid, but excludes purchase closing costs. This delta is distinct from the cost-adjusted benefit shown below.</p>
     </div>
     <div class='kpis' style='margin-top:12px'>
       <div class='kpi'><small>Homeowner net equity</small><strong id='ownerWealth'>—</strong></div>
@@ -102,7 +112,7 @@ h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.2em 0}h2{font-size:1.08rem;margin:
       <div class='kpi'><small>Total rent paid</small><strong id='rentTotal' style='color:var(--r)'>—</strong></div>
     </div>
     <div class='panel' style='margin-top:14px;background:#102132'>
-      <h2>How the net benefit is calculated</h2>
+      <h2>Full cost-adjusted benefit (separate measure)</h2>
       <table><tbody>
         <tr><td>Home appreciation</td><td id='deltaAppreciation'>—</td></tr>
         <tr><td>+ Mortgage principal paid down</td><td id='deltaPrincipal'>—</td></tr>
@@ -249,11 +259,16 @@ function render(){
   const delta=appreciation+principal+rentPaid-grossOwnerSpent+taxTot-closingCost-sale;
   const crossCheck=netEq-down-closingCost-extraOwnershipCost;
   if(Math.abs(delta-crossCheck)>0.01) console.warn('Wealth benefit reconciliation mismatch');
+  const simpleDelta=netEq+taxTot-rentPaid;
   const netNow=gross-firstTax/12, extra=netNow-N('rent');
   $('yearsOut').textContent=years;
-  $('wealthDelta').textContent=rentVerified?money(delta):'Enter rent';
-  $('wealthDelta').style.color=delta>=0?'#80e1b1':'#ffd18b';
-  $('wealthLabel').textContent=!rentVerified?'Rent benchmark unavailable for this location':delta>=0?'Modeled net benefit from buying (no investment alternative modeled)':'Modeled net cost of buying vs. renting (no investment alternative modeled)';
+  $('wealthDelta').textContent=rentVerified?money(simpleDelta):'Enter rent';
+  $('wealthDelta').style.color=simpleDelta>=0?'#80e1b1':'#ffd18b';
+  $('wealthLabel').textContent=!rentVerified?'Rent benchmark unavailable for this location':simpleDelta>=0?'Positive equity-and-rent delta':'Negative equity-and-rent delta';
+  $('simpleEquity').textContent=money(netEq);
+  $('simpleTax').textContent=money(taxTot);
+  $('simpleRent').textContent=rentVerified?money(-rentPaid):'—';
+  $('simpleDelta').textContent=rentVerified?money(simpleDelta):'—';
   $('deltaAppreciation').textContent=money(appreciation);
   $('deltaPrincipal').textContent=money(principal);
   $('deltaRentAvoided').textContent=money(rentPaid);
