@@ -91,28 +91,29 @@ h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.2em 0}h2{font-size:1.08rem;margin:
   <div class='panel'>
     <h2>The answer after <span id='yearsOut'>10</span> years</h2>
     <div class='summary'>
-      <small>Requested comparison: net home equity + tax savings + rent avoided</small>
+      <small>WEALTH-BUILDING DELTA · equity + tax savings + rent avoided</small>
       <div class='big' id='wealthDelta'>—</div>
       <strong id='wealthLabel'>Calculating...</strong>
       <p class='hint' style='margin-top:8px'>This adds the amount of rent avoided as a positive comparison benefit, while rent paid is shown as a negative expense elsewhere. This is an illustrative wealth-building score, NOT a net investment return: a buyer also pays ownership costs and a down payment, and buying does not literally recover rent that someone else paid.</p>
     </div>
     <div class='panel' style='margin-top:12px;background:#102132'>
-      <h2>Equity, tax savings, and rent: the delta</h2>
+      <h2>Wealth-building delta — the three components</h2>
       <table><tbody>
         <tr><td>Net home equity after selling costs</td><td id='simpleEquity'>—</td></tr>
         <tr><td>+ Cumulative income-tax savings</td><td id='simpleTax'>—</td></tr>
-        <tr><td>+ Rent avoided (same amount as sunk rent cost)</td><td id='simpleRent'>—</td></tr>
-        <tr><td><strong>= Equity-and-rent delta</strong></td><td><strong id='simpleDelta'>—</strong></td></tr>
+        <tr><td>+ Rent NOT spent (positive value of sunk rent)</td><td id='simpleRent'>—</td></tr>
+        <tr><td><strong>= Total wealth-building delta</strong></td><td><strong id='simpleDelta'>—</strong></td></tr>
       </tbody></table>
-      <p class='hint'>Net equity includes the original down payment and mortgage principal repaid, but excludes purchase closing costs. This delta is distinct from the cost-adjusted benefit shown below.</p>
+      <p class='hint'>Rent is negative in the expense column and on the chart. For this comparison, its positive magnitude is added as rent avoided. Net equity includes the original down payment. This total is not a net profit or return on investment.</p>
     </div>
     <div class='kpis' style='margin-top:12px'>
       <div class='kpi'><small>Homeowner net equity</small><strong id='ownerWealth'>—</strong></div>
       <div class='kpi'><small>Additional after-tax cost of owning vs. rent</small><strong id='extraOwnerCost'>—</strong></div>
       <div class='kpi'><small>Total rent paid</small><strong id='rentTotal' style='color:var(--r)'>—</strong></div>
     </div>
-    <div class='panel' style='margin-top:14px;background:#102132'>
-      <h2>Full cost-adjusted benefit (separate measure)</h2>
+    <details class='panel' style='margin-top:14px;background:#102132'>
+      <summary style='font-weight:750'>Optional: see separate cost-adjusted economic comparison</summary>
+      <h2 style='margin-top:14px'>Separate cost-adjusted economic comparison</h2>
       <table><tbody>
         <tr><td>Home appreciation</td><td id='deltaAppreciation'>—</td></tr>
         <tr><td>+ Mortgage principal paid down</td><td id='deltaPrincipal'>—</td></tr>
@@ -121,10 +122,10 @@ h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.2em 0}h2{font-size:1.08rem;margin:
         <tr><td>+ Additional income-tax savings</td><td id='deltaTaxSavings'>—</td></tr>
         <tr><td>− Buyer closing costs</td><td id='deltaClosing'>—</td></tr>
         <tr><td>− Estimated selling costs</td><td id='deltaSelling'>—</td></tr>
-        <tr><td><strong>= Net owning-versus-renting benefit</strong></td><td><strong id='deltaBreakdown'>—</strong></td></tr>
+        <tr><td><strong>= Cost-adjusted benefit (not the wealth-building delta)</strong></td><td><strong id='deltaBreakdown'>—</strong></td></tr>
       </tbody></table>
       <p class='hint'>Gross ownership payments include all mortgage payments (principal and interest) and ongoing housing costs. Because principal payments appear there, mortgage principal paid down is added back as equity growth. Tax savings are added once, separately.</p>
-    </div>
+    </details>
     <div id='alerts'></div>
   </div>
 
@@ -166,7 +167,7 @@ h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.2em 0}h2{font-size:1.08rem;margin:
     <p class='hint'>Side-by-side cumulative figures for every year. Home equity is an asset; rent paid is an expense. The displayed comparison delta is net equity + cumulative tax savings + rent avoided; rent paid itself remains a negative sunk cost. The separate full cost-adjusted measure above accounts for purchase cash and ownership payments.</p>
     <div style='overflow-x:auto'>
       <table style='min-width:590px;font-variant-numeric:tabular-nums'>
-        <thead><tr><th scope='col' style='text-align:left'>Year</th><th scope='col' style='text-align:right;color:var(--g)'>Owner net equity</th><th scope='col' style='text-align:right'>Tax savings</th><th scope='col' style='text-align:right;color:var(--r)'>Rent sunk cost</th><th scope='col' style='text-align:right'>Equity-and-rent delta</th></tr></thead>
+        <thead><tr><th scope='col' style='text-align:left'>Year</th><th scope='col' style='text-align:right;color:var(--g)'>Owner net equity</th><th scope='col' style='text-align:right'>Tax savings</th><th scope='col' style='text-align:right;color:var(--r)'>Rent sunk cost</th><th scope='col' style='text-align:right;color:var(--g)'>Wealth-building delta</th></tr></thead>
         <tbody id='yearComparison'></tbody>
       </table>
     </div>
@@ -274,7 +275,7 @@ function render(){
   $('yearsOut').textContent=years;
   $('wealthDelta').textContent=rentVerified?money(simpleDelta):'Enter rent';
   $('wealthDelta').style.color=simpleDelta>=0?'#80e1b1':'#ffd18b';
-  $('wealthLabel').textContent=!rentVerified?'Rent benchmark unavailable for this location':simpleDelta>=0?'Positive equity-and-rent delta':'Negative equity-and-rent delta';
+  $('wealthLabel').textContent=!rentVerified?'Rent benchmark unavailable for this location':simpleDelta>=0?'Positive wealth-building delta':'Negative wealth-building delta';
   $('simpleEquity').textContent=money(netEq);
   $('simpleTax').textContent=money(taxTot);
   $('simpleRent').textContent=rentVerified?money(rentPaid):'—';
