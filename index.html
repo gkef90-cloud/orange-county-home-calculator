@@ -162,6 +162,14 @@ h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:.2em 0}h2{font-size:1.08rem;margin:
       
     </div>
     <div class='chart'><canvas id='chart' width='760' height='360'></canvas></div>
+    <h2 style='margin-top:18px'>Year-by-year: ownership wealth vs. sunk rent</h2>
+    <p class='hint'>Side-by-side cumulative figures for every year. Home equity is an asset; rent paid is an expense. The simple delta is net equity + cumulative tax savings − cumulative rent. The separate full cost-adjusted measure above accounts for purchase cash and ownership payments.</p>
+    <div style='overflow-x:auto'>
+      <table style='min-width:590px;font-variant-numeric:tabular-nums'>
+        <thead><tr><th scope='col' style='text-align:left'>Year</th><th scope='col' style='text-align:right;color:var(--g)'>Owner net equity</th><th scope='col' style='text-align:right'>Tax savings</th><th scope='col' style='text-align:right;color:var(--r)'>Rent sunk cost</th><th scope='col' style='text-align:right'>Equity-and-rent delta</th></tr></thead>
+        <tbody id='yearComparison'></tbody>
+      </table>
+    </div>
     <div class='notegrid'>
       <div class='note'><small>End-period net homeowner equity</small><strong id='endOwn'>—</strong></div>
       <div class='note'><small>Owner tax savings (cumulative)</small><strong id='endTax'>—</strong></div>
@@ -237,6 +245,7 @@ function render(){
   let bal=loan, rentPaid=0, ownSpent=0, grossOwnerSpent=0, taxTot=0, principal=0, firstTax=0;
   const growth=N('growth')/100, rentGrowth=N('rentGrowth')/100;
   const chart={labels:[],owner:[],rent:[]};
+  const yearRows=[];
   for(let y=1;y<=years;y++){
     const row=sc.rows[y-1]; bal=row.bal; principal=row.pp;
     const propTax=price*N('propTax')/100*Math.pow(1.02,y-1);
@@ -248,6 +257,7 @@ function render(){
     grossOwnerSpent+=ownerCostBeforeTax;ownSpent+=ownCost;rentPaid+=rentCost;
     const home=price*Math.pow(1+growth,y), netSale=home*(1-N('selling')/100)-bal;
     chart.labels.push('Y'+y); chart.owner.push(netSale); chart.rent.push(-rentPaid);
+    yearRows.push({year:y,equity:netSale,tax:taxTot,rent:rentPaid,delta:netSale+taxTot-rentPaid});
   }
   const homeVal=price*Math.pow(1+growth,years), sale=homeVal*N('selling')/100, netEq=homeVal-sale-bal;
   const closingCost=price*N('closing')/100;
@@ -286,6 +296,7 @@ function render(){
   $('futureHome').textContent=money(homeVal);$('balance').textContent=money(bal);$('saleCost').textContent=money(sale);$('netEquity').textContent=money(netEq);
   $('endOwn').textContent=money(netEq);$('endTax').textContent=money(taxTot);$('endRentPaid').textContent=money(-rentPaid);
   draw(chart);
+  $('yearComparison').innerHTML=yearRows.map((row,i)=>`<tr${i===yearRows.length-1?" style='font-weight:800;background:#19374a'":''}><td>${row.year}</td><td style='text-align:right;color:var(--g)'>${money(row.equity)}</td><td style='text-align:right'>${money(row.tax)}</td><td style='text-align:right;color:var(--r)'>${rentVerified?money(-row.rent):'—'}</td><td style='text-align:right'>${rentVerified?money(row.delta):'—'}</td></tr>`).join('');
   const warns=[];
   if(down/price<.2&&N('pmi')===0)warns.push('Below 20% down: PMI is set to $0. Add an estimate if applicable.');
   if($('mortgageType').value!=='fixed')warns.push('ARM results assume a simplified reset rate of '+N('armReset').toFixed(2)+'% after the introductory period.');
